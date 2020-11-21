@@ -1,5 +1,6 @@
 const startBtn = document.getElementById("startBtn");
 startBtn.addEventListener("click", setGame);
+const tdArr = document.getElementsByTagName('td');
 
 function setGame() {
     const row = parseInt(document.getElementById("row").value);
@@ -8,6 +9,7 @@ function setGame() {
 
     makeBoard(row, col);
     setMineNumArr(mineNum, row * col);
+    putMineInBoard();
 }
 
 function makeBoard(rowNum, colNum) {
@@ -37,4 +39,15 @@ function setMineNumArr(numLimit, numRange) {
     function findMine(j) {
         return mines.find((e) => (e === j));
     }
-}   
+}
+
+function putMineInBoard() {
+    for (let i = 0; i < tdArr.length; i++) {
+        if (findMine(i)) {
+            tdArr[i].classList.add('mine');
+        }
+    }
+    function findMine(j) {
+        return mines.find((e) => (e === j));
+    }
+}
