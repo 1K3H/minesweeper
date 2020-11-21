@@ -6,10 +6,11 @@ function setGame() {
     const row = parseInt(document.getElementById("row").value);
     const col = parseInt(document.getElementById("col").value);
     const mineNum = parseInt(document.getElementById("mineNum").value);
-
+    const mineArr = setMineNumArr(mineNum, row * col);
+    
     makeBoard(row, col);
-    setMineNumArr(mineNum, row * col);
-    putMineInBoard();
+    
+    putMineInBoard(mineArr);
 }
 
 function makeBoard(rowNum, colNum) {
@@ -27,27 +28,28 @@ function makeBoard(rowNum, colNum) {
 }
 
 function setMineNumArr(numLimit, numRange) {
-    mines = [];
+    let mineArr = [];
     for (let i = 0; i < numLimit; i++) {
         let randomNum = Math.floor(Math.random() * numRange);
         if (!findMine(randomNum)) {
-            mines.push(randomNum);
+            mineArr.push(randomNum);
         } else {
             i--;
         }
     }
     function findMine(j) {
-        return mines.find((e) => (e === j));
+        return mineArr.find((e) => (e === j));
     }
+    return mineArr;
 }
 
-function putMineInBoard() {
+function putMineInBoard(mine) {
     for (let i = 0; i < tdArr.length; i++) {
         if (findMine(i)) {
             tdArr[i].classList.add('mine');
         }
     }
     function findMine(j) {
-        return mines.find((e) => (e === j));
+        return mine.find((e) => (e === j));
     }
 }
