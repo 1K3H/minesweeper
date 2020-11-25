@@ -69,28 +69,28 @@ function setMineNumArr(numLimit, numRange) {
     let mineArr = [];
     for (let i = 0; i < numLimit; i++) {
         let randomNum = Math.floor(Math.random() * numRange);
-        if (!findMine(randomNum)) {
+        if (mineArr.indexOf(randomNum) === -1) {
             mineArr.push(randomNum);
         } else {
             i--;
         }
     }
-    function findMine(j) {
-        return mineArr.find((e) => (e === j));
-    }
+    // function findMine(j) {
+    //     return mineArr.find((e) => (e === j));
+    // }
     return mineArr;
 }
 
 // board에 'mine' class로 삽입하기 
 function putMineInBoard(mine) {
     for (let i = 0; i < tdArr.length; i++) {
-        if (findMine(i)) {
+        if (mine.indexOf(i) !== -1) {
             tdArr[i].classList.add('mine');
         }
     }
-    function findMine(j) {
-        return mine.find((e) => (e === j));
-    }
+    // function findMine(j) {
+    //     return mine.find((e) => (e === j));
+    // }
 }
 
 // 타일 클릭 시 실행할 함수 추가
@@ -98,13 +98,13 @@ function tileEvent(mine ,targetNum, ...aroundArr) {
     tdArr[targetNum].addEventListener("click", function () {
         let count = 0;
         for (let i = 0; i < aroundArr.length; i++) {
-            if (findMine(aroundArr[i])) {
+            if (mine.indexOf(aroundArr[i]) !== -1) {
                 count++
             }
         }
-        function findMine(j) {
-            return mine.find((e) => (e === j));
-        }
+        // function findMine(j) {
+        //     return mine.find((e) => (e === j));
+        // }
         if (tdArr[targetNum].className === 'mine') {
             alert('GAME OVER!!!')
         }
