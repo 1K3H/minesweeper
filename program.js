@@ -75,9 +75,6 @@ function setMineNumArr(numLimit, numRange) {
             i--;
         }
     }
-    // function findMine(j) {
-    //     return mineArr.find((e) => (e === j));
-    // }
     return mineArr;
 }
 
@@ -88,9 +85,6 @@ function putMineInBoard(mine) {
             tdArr[i].classList.add('mine');
         }
     }
-    // function findMine(j) {
-    //     return mine.find((e) => (e === j));
-    // }
 }
 
 // 타일 클릭 시 실행할 함수 추가
@@ -102,9 +96,6 @@ function tileEvent(mine ,targetNum, ...aroundArr) {
                 count++
             }
         }
-        // function findMine(j) {
-        //     return mine.find((e) => (e === j));
-        // }
         if (tdArr[targetNum].className === 'mine') {
             alert('GAME OVER!!!')
         }
