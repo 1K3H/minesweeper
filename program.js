@@ -7,7 +7,7 @@ function setGame() {
     const col = parseInt(document.getElementById("col").value);
     const mineNum = parseInt(document.getElementById("mineNum").value);
     const mineArr = setMineNumArr(mineNum, row * col);
-    
+
     makeBoard(row, col);
     putMineInBoard(mineArr);
 
@@ -88,25 +88,47 @@ function putMineInBoard(mine) {
 }
 
 // 타일 클릭 시 실행할 함수 추가
-function tileEvent(mine ,targetNum, ...aroundArr) {
+function tileEvent(mine, targetNum, ...aroundArr) {
     tdArr[targetNum].addEventListener("click", function () {
-        let count = 0;
-        for (let i = 0; i < aroundArr.length; i++) {
-            if (mine.indexOf(aroundArr[i]) !== -1) {
-                count++
-            }
-        }
-        if (tdArr[targetNum].className === 'mine') {
-            alert('GAME OVER!!!')
-        }
-        else if (count === 0) {
-            tdArr[targetNum].style.backgroundColor = "darkcyan";
+        if (tdArr[targetNum].className !== 'flag' && tdArr[targetNum].className !== 'qmark' && tdArr[targetNum].className !== 'mine flag' && tdArr[targetNum].className !== 'mine qmark') {
+            let count = 0;
             for (let i = 0; i < aroundArr.length; i++) {
-                tdArr[aroundArr[i]].click();
+                if (mine.indexOf(aroundArr[i]) !== -1) {
+                    count++
+                }
             }
+            if (tdArr[targetNum].className === 'mine') {
+                alert('GAME OVER!!!')
+            }
+            else if (count === 0) {
+                tdArr[targetNum].style.backgroundColor = "darkcyan";
+                for (let i = 0; i < aroundArr.length; i++) {
+                    tdArr[aroundArr[i]].click();
+                }
+            }
+            else {
+                tdArr[targetNum].innerHTML = count;
+            }
+        }
+    })
+
+    tdArr[targetNum].addEventListener("auxclick", function () {
+        tdArr[targetNum].addEventListener("contextmenu", function (e) {
+            e.preventDefault();
+        })
+
+        if (tdArr[targetNum].className === 'flag' || tdArr[targetNum].className === 'mine flag') {
+            tdArr[targetNum].classList.remove('flag');
+            tdArr[targetNum].classList.add('qmark');
+            tdArr[targetNum].innerHTML = '❓'
+        }
+        else if (tdArr[targetNum].className === 'qmark' || tdArr[targetNum].className === 'mine qmark') {
+            tdArr[targetNum].classList.remove('qmark');
+            tdArr[targetNum].innerHTML = '';
         }
         else {
-            tdArr[targetNum].innerHTML = count;
+            tdArr[targetNum].classList.add('flag');
+            tdArr[targetNum].innerHTML = '🚩';
         }
     })
 }
