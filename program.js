@@ -62,6 +62,7 @@ function makeBoard(rowNum, colNum) {
     }
     tableEle += '</table>';
     document.getElementById("gameBoard").innerHTML = tableEle;
+    document.getElementById("gameBoard").style.backgroundColor = "#C6EBE7"
 }
 
 // 지뢰 위치 번호 뽑기
@@ -116,7 +117,6 @@ function tileEvent(mine, targetNum, ...aroundArr) {
         tdArr[targetNum].addEventListener("contextmenu", function (e) {
             e.preventDefault();
         })
-
         if (tdArr[targetNum].className === 'flag' || tdArr[targetNum].className === 'mine flag') {
             tdArr[targetNum].classList.remove('flag');
             tdArr[targetNum].classList.add('qmark');
