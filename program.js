@@ -2,9 +2,11 @@ const startBtn = document.getElementById("startBtn");
 startBtn.addEventListener("click", setGame);
 const tdArr = document.getElementsByTagName('td');
 
+let row;
+let col;
 function setGame() {
-    const row = parseInt(document.getElementById("row").value);
-    const col = parseInt(document.getElementById("col").value);
+    row = parseInt(document.getElementById("row").value);
+    col = parseInt(document.getElementById("col").value);
     const mineNum = parseInt(document.getElementById("mineNum").value);
     const mineArr = setMineNumArr(mineNum, row * col);
 
@@ -88,29 +90,49 @@ function putMineInBoard(mine) {
     }
 }
 
+function clickTile(targetNum) {
+    let aroundArr = [];
+    let x = Math.floor(targetNum / row);
+    let y = targetNum % col;
+    for (let i = x - 1; i <= x + 1; i++) {
+        for (let j = y - 1; j <= y + 1; j++) {
+            let idx = i * row + j;
+            if (idx < 0 || idx >= row * col) continue;
+            aroundArr.push(idx);
+        }
+    }
+    if (tdArr[targetNum].className !== 'flag' && tdArr[targetNum].className !== 'qmark' && tdArr[targetNum].className !== 'mine flag' && tdArr[targetNum].className !== 'mine qmark') {
+        let count = 0;
+        for (let i = 0; i < aroundArr.length; i++) {
+            if (tdArr[aroundArr[i]].classList.contains("mine"))
+                count++
+        }
+        if (tdArr[targetNum].className === 'mine') {
+            alert('GAME OVER!!!')
+        }
+        else if (count === 0) {
+            tdArr[targetNum].style.backgroundColor = "darkcyan";
+            for (let i = 0; i < aroundArr.length; i++) {
+                //click 함수가 무한정 호출되는 것을 방지하기 위해 isOpen이라는 변수를 추가함
+                //열린 타일이면 더 이상 click하지 않음
+                if (tdArr[aroundArr[i]].dataset.isOpen != "true") {
+                    tdArr[aroundArr[i]].dataset.isOpen = "true";
+                    //click()으로 call을 하면 maximun call stack size를 초과하는 오류가 발생하므로
+                    //clickTile이라는 함수를 만들어 처리함
+                    clickTile(aroundArr[i]);
+                }
+            }
+        }
+        else if (count > 0) {
+            tdArr[targetNum].innerHTML = count;
+        }
+    }
+}
+
 // 타일 클릭 시 실행할 함수 추가
 function tileEvent(mine, targetNum, ...aroundArr) {
     tdArr[targetNum].addEventListener("click", function () {
-        if (tdArr[targetNum].className !== 'flag' && tdArr[targetNum].className !== 'qmark' && tdArr[targetNum].className !== 'mine flag' && tdArr[targetNum].className !== 'mine qmark') {
-            let count = 0;
-            for (let i = 0; i < aroundArr.length; i++) {
-                if (mine.indexOf(aroundArr[i]) !== -1) {
-                    count++
-                }
-            }
-            if (tdArr[targetNum].className === 'mine') {
-                alert('GAME OVER!!!')
-            }
-            else if (count === 0) {
-                tdArr[targetNum].style.backgroundColor = "darkcyan";
-                for (let i = 0; i < aroundArr.length; i++) {
-                    tdArr[aroundArr[i]].click();
-                }
-            }
-            else {
-                tdArr[targetNum].innerHTML = count;
-            }
-        }
+        clickTile(targetNum);
     })
 
     tdArr[targetNum].addEventListener("auxclick", function () {
