@@ -1,5 +1,6 @@
 const startBtn = document.getElementById("startBtn");
-const tdArr = document.getElementsByTagName('td');
+const tdArr = document.getElementsByTagName("td");
+const COLOR = ["red", "skyblue", "olive", "green", "blue", "purple", "brown", "black"];
 
 startBtn.addEventListener("click", setGame);
 
@@ -7,6 +8,9 @@ let row;
 let col;
 
 function setGame() {
+  const gameSet = document.querySelector(".gameSet");
+  gameSet.style.display = "none";
+
   row = parseInt(document.getElementById("row").value);
   col = parseInt(document.getElementById("col").value);
   const mineNum = parseInt(document.getElementById("mineNum").value);
@@ -17,8 +21,7 @@ function setGame() {
 
   // 타일에 이벤트 넣기
 
-  // 코너 타일 이벤트
-  for(let i = 0; i < tdArr.length; i++) {
+  for (let i = 0; i < tdArr.length; i++) {
     tileEvent(i, getAroundArr(i));
   }
 }
@@ -37,16 +40,16 @@ function getAroundArr(num) {
 
 // board 만들기
 function makeBoard(rowNum, colNum) {
-  let tableEle = '<table>';
+  let tableEle = "<table>";
 
   for (let i = 0; i < colNum; i++) {
-    tableEle += '<tr>';
+    tableEle += "<tr>";
     for (let j = 0; j < rowNum; j++) {
-      tableEle += '<td></td>'
+      tableEle += "<td></td>"
     }
-    tableEle += '</tr>';
+    tableEle += "</tr>";
   }
-  tableEle += '</table>';
+  tableEle += "</table>";
   document.getElementById("gameBoard").innerHTML = tableEle;
 }
 
@@ -64,28 +67,28 @@ function setMineNumArr(numLimit, numRange) {
   return mineArr;
 }
 
-// board에 'mine' class로 삽입하기 
+// board에 "mine" class로 삽입하기 
 function putMineInBoard(mine) {
   for (let i = 0; i < tdArr.length; i++) {
     if (mine.indexOf(i) !== -1) {
-      tdArr[i].classList.add('mine');
+      tdArr[i].classList.add("mine");
     }
   }
 }
 
 function clickTile(targetNum, aroundArr) {
 
-  if (tdArr[targetNum].className !== 'flag' && tdArr[targetNum].className !== 'qmark' && tdArr[targetNum].className !== 'mine flag' && tdArr[targetNum].className !== 'mine qmark') {
+  if (tdArr[targetNum].className !== "flag" && tdArr[targetNum].className !== "qmark" && tdArr[targetNum].className !== "mine flag" && tdArr[targetNum].className !== "mine qmark") {
     let count = 0;
     for (let j = 0; j < aroundArr.length; j++) {
       if (tdArr[aroundArr[j]].classList.contains("mine"))
         count++;
     }
-    if (tdArr[targetNum].className === 'mine') {
-      alert('GAME OVER!!!');
+    if (tdArr[targetNum].className === "mine") {
+      alert("GAME OVER!!!");
     }
     else if (count === 0) {
-      tdArr[targetNum].style.backgroundColor = "darkcyan";
+      tdArr[targetNum].style.backgroundColor = "rgb(225, 250, 173)";
       for (let k = 0; k < aroundArr.length; k++) {
         if (tdArr[aroundArr[k]].dataset.isOpen !== "true") {
           tdArr[aroundArr[k]].dataset.isOpen = "true";
@@ -95,6 +98,7 @@ function clickTile(targetNum, aroundArr) {
     }
     else if (count > 0) {
       tdArr[targetNum].dataset.isOpen = "true";
+      tdArr[targetNum].style.color = COLOR[count-1];
       tdArr[targetNum].innerHTML = count;
     }
   }
@@ -111,18 +115,20 @@ function tileEvent(targetNum, aroundArr) {
       e.preventDefault();
     });
     if (tdArr[targetNum].dataset.isOpen === "true") return;
-    if (tdArr[targetNum].className === 'flag' || tdArr[targetNum].className === 'mine flag') {
-      tdArr[targetNum].classList.remove('flag');
-      tdArr[targetNum].classList.add('qmark');
-      tdArr[targetNum].innerHTML = '❓';
+    if (tdArr[targetNum].className === "flag" || tdArr[targetNum].className === "mine flag") {
+      tdArr[targetNum].classList.remove("flag");
+      tdArr[targetNum].classList.add("qmark");
+      tdArr[targetNum].innerHTML = "❓";
     }
-    else if (tdArr[targetNum].className === 'qmark' || tdArr[targetNum].className === 'mine qmark') {
-      tdArr[targetNum].classList.remove('qmark');
-      tdArr[targetNum].innerHTML = '';
+    else if (tdArr[targetNum].className === "qmark" || tdArr[targetNum].className === "mine qmark") {
+      tdArr[targetNum].classList.remove("qmark");
+      tdArr[targetNum].innerHTML = "";
+      tdArr[targetNum].style.backgroundColor = "";
     }
     else {
-      tdArr[targetNum].classList.add('flag');
-      tdArr[targetNum].innerHTML = '🚩';
+      tdArr[targetNum].classList.add("flag");
+      tdArr[targetNum].innerHTML = "🚩";
+      tdArr[targetNum].style.backgroundColor = "rgb(255, 255, 160)";
     }
   });
 }
