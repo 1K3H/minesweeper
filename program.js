@@ -1,11 +1,13 @@
 const startBtn = document.getElementById("startBtn");
 const tdArr = document.getElementsByTagName("td");
 const COLOR = ["red", "skyblue", "olive", "green", "blue", "purple", "brown", "black"];
-
-startBtn.addEventListener("click", setGame);
-
 let row;
 let col;
+
+startBtn.addEventListener("click", setGame);
+window.addEventListener("contextmenu", function (e) {
+  e.preventDefault();
+});
 
 function setGame() {
   const gameSet = document.querySelector(".gameSet");
@@ -111,9 +113,6 @@ function tileEvent(targetNum, aroundArr) {
   });
 
   tdArr[targetNum].addEventListener("auxclick", function () {
-    tdArr[targetNum].addEventListener("contextmenu", function (e) {
-      e.preventDefault();
-    });
     if (tdArr[targetNum].dataset.isOpen === "true") return;
     if (tdArr[targetNum].className === "flag" || tdArr[targetNum].className === "mine flag") {
       tdArr[targetNum].classList.remove("flag");
