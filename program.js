@@ -3,9 +3,12 @@ const tdArr = document.getElementsByTagName('td');
 
 startBtn.addEventListener("click", setGame);
 
+let row;
+let col;
+
 function setGame() {
-  const row = parseInt(document.getElementById("row").value);
-  const col = parseInt(document.getElementById("col").value);
+  row = parseInt(document.getElementById("row").value);
+  col = parseInt(document.getElementById("col").value);
   const mineNum = parseInt(document.getElementById("mineNum").value);
   const mineArr = setMineNumArr(mineNum, row * col);
 
@@ -15,39 +18,21 @@ function setGame() {
   // 타일에 이벤트 넣기
 
   // 코너 타일 이벤트
-  // 좌상
-  tileEvent(0, 1, row, row + 1);
-  // 우상
-  tileEvent(row - 1, row - 2, 2 * row - 2, 2 * row - 1);
-  // 좌하
-  tileEvent(row * (col - 1), row * (col - 2), row * (col - 2) + 1, row * (col - 1) + 1);
-  // 우하
-  tileEvent(row * col - 1, row * (col - 1) - 2, row * (col - 1) - 1, row * col - 2);
+  for(let i = 0; i < tdArr.length; i++) {
+    tileEvent(i, getAroundArr(i));
+  }
+}
 
-  // 모서리 타일
-  // 상
-  for (let i = 1; i <= row - 2; i++) {
-    tileEvent(i, i - 1, i + 1, i + row - 1, i + row, i + row + 1);
-  }
-  // 하
-  for (let i = row * (col - 1) + 1; i <= row * col - 2; i++) {
-    tileEvent(i, i - row - 1, i - row, i - row + 1, i - 1, i + 1);
-  }
-  // 좌
-  for (let i = row; i <= row * (col - 2); i += row) {
-    tileEvent(i, i - row, i - row + 1, i + 1, i + row, i + row + 1);
-  }
-  // 우
-  for (let i = 2 * row - 1; i <= row * (col - 1) - 1; i += row) {
-    tileEvent(i, i - row - 1, i - row, i - 1, i + row - 1, i + row);
-  }
-
-  // 나머지 모든 타일
-  for (let i = 1; i <= col - 2; i++) {
-    for (let j = i * row + 1; j <= (1 + i) * row - 2; j++) {
-      tileEvent(j, j - row - 1, j - row, j - row + 1, j - 1, j + 1, j + row - 1, j + row, j + row + 1);
-    }
-  }
+function getAroundArr(num) {
+  if (num === 0) return [1, row, row + 1];
+  if (num === row - 1) return [row - 2, 2 * row - 2, 2 * row - 1];
+  if (num === row * (col - 1)) return [row * (col - 2), row * (col - 2) + 1, row * (col - 1) + 1];
+  if (num === row * col - 1) return [row * (col - 1) - 2, row * (col - 1) - 1, row * col - 2];
+  if (0 < num && num < row - 1) return [num - 1, num + 1, num + row - 1, num + row, num + row + 1];
+  if (row * (col - 1) < num && num < row * col - 1) return [num - row - 1, num - row, num - row + 1, num - 1, num + 1];
+  if (num % row === 0) return [num - row, num - row + 1, num + 1, num + row, num + row + 1];
+  if (num % row === row - 1) return [num - row - 1, num - row, num - 1, num + row - 1, num + row];
+  return [num - row - 1, num - row, num - row + 1, num - 1, num + 1, num + row - 1, num + row, num + row + 1];
 }
 
 // board 만들기
@@ -92,8 +77,8 @@ function clickTile(targetNum, aroundArr) {
 
   if (tdArr[targetNum].className !== 'flag' && tdArr[targetNum].className !== 'qmark' && tdArr[targetNum].className !== 'mine flag' && tdArr[targetNum].className !== 'mine qmark') {
     let count = 0;
-    for (let i = 0; i < aroundArr.length; i++) {
-      if (tdArr[aroundArr[i]].classList.contains("mine"))
+    for (let j = 0; j < aroundArr.length; j++) {
+      if (tdArr[aroundArr[j]].classList.contains("mine"))
         count++;
     }
     if (tdArr[targetNum].className === 'mine') {
@@ -101,10 +86,10 @@ function clickTile(targetNum, aroundArr) {
     }
     else if (count === 0) {
       tdArr[targetNum].style.backgroundColor = "darkcyan";
-      for (let i = 0; i < aroundArr.length; i++) {
-        if (tdArr[aroundArr[i]].dataset.isOpen !== "true") {
-          tdArr[aroundArr[i]].dataset.isOpen = "true";
-          tdArr[aroundArr[i]].click();
+      for (let k = 0; k < aroundArr.length; k++) {
+        if (tdArr[aroundArr[k]].dataset.isOpen !== "true") {
+          tdArr[aroundArr[k]].dataset.isOpen = "true";
+          clickTile(aroundArr[k], getAroundArr(aroundArr[k]));
         }
       }
     }
@@ -116,15 +101,15 @@ function clickTile(targetNum, aroundArr) {
 }
 
 // 타일 클릭 시 실행할 함수 추가
-function tileEvent(targetNum, ...aroundArr) {
+function tileEvent(targetNum, aroundArr) {
   tdArr[targetNum].addEventListener("click", function () {
     clickTile(targetNum, aroundArr);
-  })
+  });
 
   tdArr[targetNum].addEventListener("auxclick", function () {
     tdArr[targetNum].addEventListener("contextmenu", function (e) {
       e.preventDefault();
-    })
+    });
     if (tdArr[targetNum].dataset.isOpen === "true") return;
     if (tdArr[targetNum].className === 'flag' || tdArr[targetNum].className === 'mine flag') {
       tdArr[targetNum].classList.remove('flag');
