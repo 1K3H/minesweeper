@@ -1,14 +1,12 @@
 const startBtn = document.getElementById("startBtn");
 const tdArr = document.getElementsByTagName('td');
-let row;
-let col;
 
 startBtn.addEventListener("click", setGame);
 
 function setGame() {
-  row = parseInt(document.getElementById("row").value);
-  col = parseInt(document.getElementById("col").value);
-  const mineNum = parseInt(document.getElementById("mineNum").value); // 지뢰갯수 = input 입력값
+  const row = parseInt(document.getElementById("row").value);
+  const col = parseInt(document.getElementById("col").value);
+  const mineNum = parseInt(document.getElementById("mineNum").value);
   const mineArr = setMineNumArr(mineNum, row * col);
 
   makeBoard(row, col);
@@ -18,36 +16,36 @@ function setGame() {
 
   // 코너 타일 이벤트
   // 좌상
-  tileEvent(mineArr, 0, 1, row, row + 1);
+  tileEvent(0, 1, row, row + 1);
   // 우상
-  tileEvent(mineArr, row - 1, row - 2, 2 * row - 2, 2 * row - 1);
+  tileEvent(row - 1, row - 2, 2 * row - 2, 2 * row - 1);
   // 좌하
-  tileEvent(mineArr, row * (col - 1), row * (col - 2), row * (col - 2) + 1, row * (col - 1) + 1);
+  tileEvent(row * (col - 1), row * (col - 2), row * (col - 2) + 1, row * (col - 1) + 1);
   // 우하
-  tileEvent(mineArr, row * col - 1, row * (col - 1) - 2, row * (col - 1) - 1, row * col - 2);
+  tileEvent(row * col - 1, row * (col - 1) - 2, row * (col - 1) - 1, row * col - 2);
 
   // 모서리 타일
   // 상
   for (let i = 1; i <= row - 2; i++) {
-    tileEvent(mineArr, i, i - 1, i + 1, i + row - 1, i + row, i + row + 1);
+    tileEvent(i, i - 1, i + 1, i + row - 1, i + row, i + row + 1);
   }
   // 하
   for (let i = row * (col - 1) + 1; i <= row * col - 2; i++) {
-    tileEvent(mineArr, i, i - row - 1, i - row, i - row + 1, i - 1, i + 1);
+    tileEvent(i, i - row - 1, i - row, i - row + 1, i - 1, i + 1);
   }
   // 좌
   for (let i = row; i <= row * (col - 2); i += row) {
-    tileEvent(mineArr, i, i - row, i - row + 1, i + 1, i + row, i + row + 1);
+    tileEvent(i, i - row, i - row + 1, i + 1, i + row, i + row + 1);
   }
   // 우
   for (let i = 2 * row - 1; i <= row * (col - 1) - 1; i += row) {
-    tileEvent(mineArr, i, i - row - 1, i - row, i - 1, i + row - 1, i + row);
+    tileEvent(i, i - row - 1, i - row, i - 1, i + row - 1, i + row);
   }
 
   // 나머지 모든 타일
   for (let i = 1; i <= col - 2; i++) {
     for (let j = i * row + 1; j <= (1 + i) * row - 2; j++) {
-      tileEvent(mineArr, j, j - row - 1, j - row, j - row + 1, j - 1, j + 1, j + row - 1, j + row, j + row + 1);
+      tileEvent(j, j - row - 1, j - row, j - row + 1, j - 1, j + 1, j + row - 1, j + row, j + row + 1);
     }
   }
 }
@@ -90,17 +88,8 @@ function putMineInBoard(mine) {
   }
 }
 
-function clickTile(targetNum) {
-  let aroundArr = [];
-  let x = Math.floor(targetNum / row);
-  let y = targetNum % col;
-  for (let i = x - 1; i <= x + 1; i++) {
-    for (let j = y - 1; j <= y + 1; j++) {
-      let idx = i * row + j;
-      if (idx < 0 || idx >= row * col) continue;
-      aroundArr.push(idx);
-    }
-  }
+function clickTile(targetNum, aroundArr) {
+
   if (tdArr[targetNum].className !== 'flag' && tdArr[targetNum].className !== 'qmark' && tdArr[targetNum].className !== 'mine flag' && tdArr[targetNum].className !== 'mine qmark') {
     let count = 0;
     for (let i = 0; i < aroundArr.length; i++) {
@@ -113,26 +102,23 @@ function clickTile(targetNum) {
     else if (count === 0) {
       tdArr[targetNum].style.backgroundColor = "darkcyan";
       for (let i = 0; i < aroundArr.length; i++) {
-        //click 함수가 무한정 호출되는 것을 방지하기 위해 isOpen이라는 변수를 추가함
-        //열린 타일이면 더 이상 click하지 않음
         if (tdArr[aroundArr[i]].dataset.isOpen !== "true") {
           tdArr[aroundArr[i]].dataset.isOpen = "true";
-          //click()으로 call을 하면 maximun call stack size를 초과하는 오류가 발생하므로
-          //clickTile이라는 함수를 만들어 처리함
-          clickTile(aroundArr[i]);
+          tdArr[aroundArr[i]].click();
         }
       }
     }
     else if (count > 0) {
+      tdArr[targetNum].dataset.isOpen = "true";
       tdArr[targetNum].innerHTML = count;
     }
   }
 }
 
 // 타일 클릭 시 실행할 함수 추가
-function tileEvent(mine, targetNum, ...aroundArr) {
+function tileEvent(targetNum, ...aroundArr) {
   tdArr[targetNum].addEventListener("click", function () {
-    clickTile(targetNum);
+    clickTile(targetNum, aroundArr);
   })
 
   tdArr[targetNum].addEventListener("auxclick", function () {
